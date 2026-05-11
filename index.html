@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>VOLT PREDICT PRO</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=Manrope:wght@400;600;800&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --green: #00ff87;
+  --green-dim: #00c96a;
+  --red: #ff4757;
+  --yellow: #ffd32a;
+  --bg: #07080d;
+  --bg2: #0d0f18;
+  --border: rgba(255,255,255,0.07);
+  --text: #c8cdd8;
+  --text-dim: #454a5a;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Manrope',sans-serif;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+body::before{
+  content:'';position:fixed;inset:0;
+  background:
+    radial-gradient(ellipse 60% 40% at 10% 20%, rgba(0,255,135,0.05) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 60% at 90% 80%, rgba(0,100,255,0.04) 0%, transparent 60%);
+  pointer-events:none;z-index:0;
+}
+header{
+  position:relative;z-index:10;
+  padding:24px 20px 0;
+  text-align:center;
+}
+.logo{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(42px,10vw,80px);
+  letter-spacing:6px;line-height:1;color:#fff;
+}
+.logo span{color:var(--green);}
+.tagline{font-size:10px;letter-spacing:5px;color:var(--text-dim);margin-top:4px;text-transform:uppercase;}
+.live-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(0,255,135,0.08);border:1px solid rgba(0,255,135,0.2);
+  border-radius:20px;padding:4px 14px;
+  font-size:10px;letter-spacing:3px;color:var(--green);
+  margin-top:12px;text-transform:uppercase;
+}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:0.2;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}
+.tabs{
+  display:flex;gap:0;background:rgba(255,255,255,0.03);
+  border:1px solid var(--border);border-radius:12px;
+  padding:4px;margin:24px auto 0;max-width:500px;
+}
+.tab{
+  flex:1;padding:10px;text-align:center;font-size:11px;
+  letter-spacing:2px;font-weight:600;border-radius:9px;
+  cursor:pointer;color:var(--text-dim);transition:all 0.2s;
+  text-transform:uppercase;border:none;background:none;
+  font-family:'Manrope',sans-serif;
+}
+.tab.active{background:var(--green);color:#000;font-weight:800;}
+main{
+  position:relative;z-index:5;
+  max-width:560px;margin:0 auto;
+  padding:20px 16px 60px;
+}
+.card{
+  background:rgba(255,255,255,0.025);
+  border:1px solid var(--border);
+  border-radius:16px;padding:20px;margin-bottom:12px;
+}
+.card-title{
+  font-size:10px;letter-spacing:3px;color:var(--green);
+  margin-bottom:16px;text-transform:uppercase;font-family:'DM Mono',monospace;
+}
+label{font-size:10px;letter-spacing:2px;color:var(--text-dim);display:block;margin-bottom:6px;text-transform:uppercase;}
+input,select{
+  width:100%;background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:10px;padding:12px 14px;color:#fff;font-size:13px;
+  font-family:'DM Mono',monospace;margin-bottom:12px;
+  transition:border-color 0.2s;-webkit-appearance:none;
+}
+input:focus,select:focus{outline:none;border-color:rgba(0,255,135,0.4);background:rgba(0,255,135,0.03);}
+input::placeholder{color:#2a2d38;}
+select option{background:#0d0f18;color:#fff;}
+.search-wrap{position:relative;margin-bottom:12px;}
+.search-wrap input{margin-bottom:0;}
+.dropdown{
+  position:absolute;top:calc(100% + 4px);left:0;right:0;
+  background:#13162a;border:1px solid rgba(0,255,135,0.2);
+  border-radius:10px;z-index:100;max-height:220px;overflow-y:auto;
+  box-shadow:0 8px 32px rgba(0,0,0,0.5);
+}
+.dropdown-item{
+  padding:10px 14px;font-size:13px;cursor:pointer;
+  display:flex;align-items:center;gap:10px;transition:background 0.15s;
+  border-bottom:1px solid rgba(255,255,255,0.04);font-family:'DM Mono',monospace;
+}
+.dropdown-item:last-child{border-bottom:none;}
+.dropdown-item:hover{background:rgba(0,255,135,0.08);}
+.dropdown-item img{width:24px;height:24px;object-fit:contain;border-radius:3px;}
+.dropdown-item .team-country{font-size:10px;color:var(--text-dim);margin-left:auto;}
+.team-badge{
+  display:flex;align-items:center;gap:10px;
+  background:rgba(0,255,135,0.06);border:1px solid rgba(0,255,135,0.2);
+  border-radius:10px;padding:10px 14px;margin-bottom:12px;cursor:pointer;
+}
+.team-badge img{width:28px;height:28px;object-fit:contain;}
+.team-badge-name{font-size:13px;font-weight:600;color:#fff;}
+.team-badge-sub{font-size:10px;color:var(--text-dim);}
+.team-badge-change{margin-left:auto;font-size:10px;color:var(--text-dim);letter-spacing:1px;}
+.markets-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+.market-btn{
+  padding:10px;border-radius:10px;border:1px solid var(--border);
+  background:rgba(255,255,255,0.03);color:var(--text-dim);font-size:11px;
+  letter-spacing:1px;cursor:pointer;text-align:center;transition:all 0.2s;
+  font-family:'Manrope',sans-serif;font-weight:600;
+}
+.market-btn.selected{border-color:var(--green);background:rgba(0,255,135,0.08);color:var(--green);}
+.btn{
+  width:100%;padding:16px;border:none;border-radius:12px;
+  font-weight:800;font-size:12px;letter-spacing:3px;cursor:pointer;
+  transition:all 0.2s;font-family:'Manrope',sans-serif;text-transform:uppercase;
+}
+.btn-green{background:linear-gradient(135deg,var(--green),var(--green-dim));color:#000;}
+.btn-green:disabled{opacity:0.4;cursor:not-allowed;}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text-dim);margin-top:8px;}
+.error-box{
+  background:rgba(255,71,87,0.08);border:1px solid rgba(255,71,87,0.25);
+  border-radius:10px;padding:12px 14px;font-size:12px;color:#ff6b78;
+  margin-bottom:12px;line-height:1.5;font-family:'DM Mono',monospace;
+}
+.loading-bar{height:2px;background:rgba(255,255,255,0.05);border-radius:2px;margin:12px 0;overflow:hidden;}
+.loading-bar-fill{height:100%;width:30%;background:linear-gradient(90deg,transparent,var(--green),transparent);animation:sweep 1.5s infinite;}
+@keyframes sweep{0%{transform:translateX(-200%)}100%{transform:translateX(400%)}}
+.loading-step{font-size:11px;color:var(--text-dim);letter-spacing:2px;text-align:center;margin-bottom:8px;font-family:'DM Mono',monospace;}
+.verdict-card{border-radius:16px;padding:24px;text-align:center;margin-bottom:12px;}
+.verdict-label{font-size:10px;letter-spacing:4px;margin-bottom:8px;opacity:0.8;font-family:'DM Mono',monospace;}
+.verdict-main{font-family:'Bebas Neue',sans-serif;font-size:64px;letter-spacing:4px;line-height:1;margin-bottom:8px;}
+.verdict-reason{font-size:13px;line-height:1.6;opacity:0.9;}
+.stat-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.stat-row:last-child{border-bottom:none;}
+.stat-key{color:var(--text-dim);font-size:11px;letter-spacing:1px;}
+.stat-val{font-weight:700;color:#fff;font-family:'DM Mono',monospace;}
+.factor-item{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);align-items:flex-start;}
+.factor-item:last-child{border-bottom:none;}
+.factor-icon{width:20px;height:20px;border-radius:50%;background:rgba(0,255,135,0.15);display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--green);flex-shrink:0;margin-top:1px;}
+.factor-text{font-size:12px;line-height:1.6;color:var(--text);}
+.market-result{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);}
+.market-result:last-child{border-bottom:none;}
+.market-name{font-size:12px;font-weight:600;color:#fff;}
+.market-prob{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;}
+.market-rec{font-size:10px;padding:3px 8px;border-radius:4px;font-weight:800;letter-spacing:1px;}
+.slip-item{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px;position:relative;}
+.slip-remove{position:absolute;top:10px;right:10px;background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:16px;}
+.slip-match{font-size:12px;font-weight:700;color:#fff;margin-bottom:4px;}
+.slip-market{font-size:10px;color:var(--text-dim);letter-spacing:1px;}
+.slip-prob{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1px;margin-top:6px;}
+.acca-summary{background:rgba(0,255,135,0.06);border:1px solid rgba(0,255,135,0.2);border-radius:12px;padding:16px;text-align:center;margin-top:8px;}
+.acca-prob{font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:2px;}
+.acca-label{font-size:10px;letter-spacing:3px;color:var(--text-dim);margin-bottom:8px;}
+.acca-rec{font-size:13px;color:var(--green);font-weight:700;margin-top:4px;}
+.form-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);font-size:11px;font-family:'DM Mono',monospace;}
+.form-row:last-child{border-bottom:none;}
+.form-match{flex:1;color:var(--text);}
+.disclaimer{font-size:9px;color:#1e2030;text-align:center;letter-spacing:1px;line-height:1.8;margin-top:12px;text-transform:uppercase;}
+.section{display:none;}
+.section.active{display:block;}
+.setup-card{background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:20px;padding:28px 24px;text-align:center;}
+.setup-icon{font-size:40px;margin-bottom:16px;}
+.setup-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:3px;color:#fff;margin-bottom:8px;}
+.setup-desc{font-size:12px;color:var(--text-dim);line-height:1.7;margin-bottom:20px;}
+.setup-desc a{color:var(--green);text-decoration:none;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeIn 0.3s ease forwards;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">VOLT <span>PREDICT</span></div>
+  <div class="tagline">Football Intelligence · AI Powered</div>
+  <div class="live-badge"><span class="live-dot"></span> Live Data</div>
+  <div class="tabs" id="mainTabs" style="display:none">
+    <button class="tab active" onclick="switchTab('predict',this)">Predict</button>
+    <button class="tab" onclick="switchTab('betslip',this)">Betslip</button>
+    <button class="tab" onclick="switchTab('settings',this)">Settings</button>
+  </div>
+</header>
+
+<main>
+  <!-- SETUP -->
+  <div id="setupSection" class="section active">
+    <div class="setup-card">
+      <div class="setup-icon">⚡</div>
+      <div class="setup-title">CONNECT YOUR DATA</div>
+      <div class="setup-desc">
+        Enter your <a href="https://api-sports.io" target="_blank">api-sports.io</a> API key to unlock live football data.<br/><br/>
+        Free plan works — sign up at api-sports.io, no credit card needed.
+      </div>
+      <label>YOUR API-SPORTS.IO KEY</label>
+      <input type="password" id="apiKeyInput" placeholder="Paste your API key here..."/>
+      <div id="setupError" class="error-box" style="display:none"></div>
+      <button class="btn btn-green" onclick="connectAPI()">CONNECT & START →</button>
+    </div>
+  </div>
+
+  <!-- PREDICT -->
+  <div id="predictSection" class="section">
+    <div class="card">
+      <div class="card-title">Home Team</div>
+      <div id="homeTeamDisplay" style="display:none"></div>
+      <div id="homeSearchWrap" class="search-wrap">
+        <input type="text" id="homeSearch" placeholder="Search team name..." oninput="searchTeam('home')" autocomplete="off"/>
+        <div class="dropdown" id="homeDropdown" style="display:none"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Away Team</div>
+      <div id="awayTeamDisplay" style="display:none"></div>
+      <div id="awaySearchWrap" class="search-wrap">
+        <input type="text" id="awaySearch" placeholder="Search team name..." oninput="searchTeam('away')" autocomplete="off"/>
+        <div class="dropdown" id="awayDropdown" style="display:none"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Select Markets</div>
+      <div class="markets-grid">
+        <button class="market-btn selected" onclick="toggleMarket(this,'u45')">Under 4.5</button>
+        <button class="market-btn selected" onclick="toggleMarket(this,'u35')">Under 3.5</button>
+        <button class="market-btn selected" onclick="toggleMarket(this,'u25')">Under 2.5</button>
+        <button class="market-btn selected" onclick="toggleMarket(this,'btts')">BTTS</button>
+        <button class="market-btn" onclick="toggleMarket(this,'1x2')">1X2 Result</button>
+        <button class="market-btn" onclick="toggleMarket(this,'ov15')">Over 1.5</button>
+      </div>
+    </div>
+    <div id="predictError" class="error-box" style="display:none"></div>
+    <button class="btn btn-green" id="predictBtn" onclick="runPrediction()">ANALYSE MATCH →</button>
+    <div id="loadingSection" style="display:none;margin-top:16px">
+      <div class="loading-step" id="loadingStep">Initialising...</div>
+      <div class="loading-bar"><div class="loading-bar-fill"></div></div>
+    </div>
+    <div id="resultsSection" style="display:none;margin-top:16px"></div>
+  </div>
+
+  <!-- BETSLIP -->
+  <div id="betslipSection" class="section">
+    <div class="card">
+      <div class="card-title">Accumulator Builder</div>
+      <div id="slipItems"></div>
+      <div id="slipEmpty" style="text-align:center;padding:20px;font-size:12px;color:var(--text-dim)">
+        No predictions added yet.<br/>Run a prediction and tap "Add to Betslip".
+      </div>
+    </div>
+    <div id="accaSummary" style="display:none"></div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div id="settingsSection" class="section">
+    <div class="card">
+      <div class="card-title">API Configuration</div>
+      <label>API-SPORTS.IO KEY</label>
+      <input type="password" id="settingsKey" placeholder="Your API key"/>
+      <button class="btn btn-green" onclick="updateKey()">UPDATE KEY</button>
+    </div>
+    <div class="card">
+      <div class="card-title">Session Stats</div>
+      <div class="stat-row"><span class="stat-key">Data Source</span><span class="stat-val">api-sports.io</span></div>
+      <div class="stat-row"><span class="stat-key">AI Engine</span><span class="stat-val">Claude Sonnet</span></div>
+      <div class="stat-row"><span class="stat-key">Matches Analysed</span><span class="stat-val" id="matchCount">0</span></div>
+      <div class="stat-row"><span class="stat-key">API Requests Used</span><span class="stat-val" id="reqCount">0</span></div>
+    </div>
+  </div>
+</main>
+
+<script>
+let API_KEY = "";
+let selectedHome = null;
+let selectedAway = null;
+let selectedMarkets = ['u45','u35','u25','btts'];
+let betslip = [];
+let matchCount = 0;
+let reqCount = 0;
+let searchTimers = {};
+
+// Date helpers — free plan uses from/to instead of last
+function getDateRange() {
+  const to = new Date();
+  const from = new Date();
+  from.setMonth(from.getMonth() - 4); // 4 months back
+  const fmt = d => d.toISOString().slice(0,10);
+  return { from: fmt(from), to: fmt(to) };
+}
+
+async function apiCall(endpoint) {
+  reqCount++;
+  document.getElementById('reqCount').textContent = reqCount;
+  const res = await fetch(`https://v3.football.api-sports.io${endpoint}`, {
+    headers: { 'x-apisports-key': API_KEY }
+  });
+  if (!res.ok) throw new Error(`API error ${res.status}`);
+  const data = await res.json();
+  if (data.errors && Object.keys(data.errors).length > 0) {
+    const msg = Object.values(data.errors)[0];
+    throw new Error(typeof msg === 'string' ? msg : JSON.stringify(msg));
+  }
+  return data;
+}
+
+async function connectAPI() {
+  const key = document.getElementById('apiKeyInput').value.trim();
+  if (key.length < 10) { showSetupMsg("Please enter a valid API key.", false); return; }
+  API_KEY = key;
+  showSetupMsg("Testing connection...", true);
+  try {
+    const test = await apiCall('/status');
+    if (test.response) {
+      document.getElementById('setupSection').classList.remove('active');
+      document.getElementById('predictSection').classList.add('active');
+      document.getElementById('mainTabs').style.display = 'flex';
+      document.getElementById('settingsKey').value = key;
+    } else {
+      throw new Error("Invalid API key.");
+    }
+  } catch(e) {
+    showSetupMsg(e.message, false);
+    API_KEY = "";
+  }
+}
+
+function showSetupMsg(msg, ok) {
+  const b = document.getElementById('setupError');
+  b.style.display = 'block';
+  b.style.color = ok ? 'var(--green)' : '#ff6b78';
+  b.style.background = ok ? 'rgba(0,255,135,0.06)' : 'rgba(255,71,87,0.08)';
+  b.style.borderColor = ok ? 'rgba(0,255,135,0.2)' : 'rgba(255,71,87,0.25)';
+  b.textContent = msg;
+}
+
+function updateKey() {
+  const k = document.getElementById('settingsKey').value.trim();
+  if (k.length < 10) return;
+  API_KEY = k;
+  alert('API key updated!');
+}
+
+function switchTab(tab, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(tab + 'Section').classList.add('active');
+  if (tab === 'betslip') renderBetslip();
+}
+
+// Team search
+function searchTeam(side) {
+  clearTimeout(searchTimers[side]);
+  const q = document.getElementById(side + 'Search').value.trim();
+  const dd = document.getElementById(side + 'Dropdown');
+  if (q.length < 3) { dd.style.display = 'none'; return; }
+  searchTimers[side] = setTimeout(async () => {
+    try {
+      const data = await apiCall(`/teams?search=${encodeURIComponent(q)}`);
+      const teams = (data.response || []).slice(0, 8);
+      if (!teams.length) { dd.style.display = 'none'; return; }
+      dd.innerHTML = teams.map(t => `
+        <div class="dropdown-item" onclick='selectTeam("${side}", ${JSON.stringify(t).replace(/'/g,"&#39;")})'>
+          <img src="${t.team.logo}" onerror="this.style.display='none'" alt=""/>
+          <span>${t.team.name}</span>
+          <span class="team-country">${t.team.country||''}</span>
+        </div>`).join('');
+      dd.style.display = 'block';
+    } catch(e) { dd.style.display = 'none'; }
+  }, 400);
+}
+
+function selectTeam(side, teamData) {
+  if (typeof teamData === 'string') teamData = JSON.parse(teamData);
+  if (side === 'home') selectedHome = teamData;
+  else selectedAway = teamData;
+  document.getElementById(side+'Dropdown').style.display = 'none';
+  document.getElementById(side+'Search').value = '';
+  document.getElementById(side+'SearchWrap').style.display = 'none';
+  const display = document.getElementById(side+'TeamDisplay');
+  display.innerHTML = `
+    <div class="team-badge" onclick="clearTeam('${side}')">
+      <img src="${teamData.team.logo}" onerror="this.style.display='none'" width="28" height="28"/>
+      <div>
+        <div class="team-badge-name">${teamData.team.name}</div>
+        <div class="team-badge-sub">${teamData.team.country||'International'}</div>
+      </div>
+      <span class="team-badge-change">TAP TO CHANGE</span>
+    </div>`;
+  display.style.display = 'block';
+}
+
+function clearTeam(side) {
+  if (side === 'home') selectedHome = null; else selectedAway = null;
+  document.getElementById(side+'TeamDisplay').style.display = 'none';
+  document.getElementById(side+'SearchWrap').style.display = 'block';
+  document.getElementById(side+'Search').value = '';
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.search-wrap'))
+    document.querySelectorAll('.dropdown').forEach(d => d.style.display = 'none');
+});
+
+function toggleMarket(btn, market) {
+  btn.classList.toggle('selected');
+  selectedMarkets = btn.classList.contains('selected')
+    ? [...selectedMarkets, market]
+    : selectedMarkets.filter(m => m !== market);
+}
+
+// Get current season year (football season: if before July, use previous year)
+function getCurrentSeason() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth() + 1; // 1-12
+  return month >= 7 ? year : year - 1;
+}
+
+// Fetch fixtures using season + date range (free plan compatible)
+async function getFixtures(teamId) {
+  const season = getCurrentSeason();
+  const { from, to } = getDateRange();
+  // Try current season first
+  let data = await apiCall(`/fixtures?team=${teamId}&season=${season}&from=${from}&to=${to}&status=FT`);
+  let results = (data.response || []);
+  // If not enough, also try previous season
+  if (results.length < 5) {
+    const prevData = await apiCall(`/fixtures?team=${teamId}&season=${season - 1}&status=FT`);
+    results = [...results, ...(prevData.response || [])];
+  }
+  const sorted = results.sort((a,b) => new Date(b.fixture.date) - new Date(a.fixture.date));
+  return sorted.slice(0, 10);
+}
+
+// H2H with season
+async function getH2H(id1, id2) {
+  const season = getCurrentSeason();
+  const data = await apiCall(`/fixtures/headtohead?h2h=${id1}-${id2}&season=${season}`);
+  let results = data.response || [];
+  // If less than 3 H2H, grab previous season too
+  if (results.length < 3) {
+    const prev = await apiCall(`/fixtures/headtohead?h2h=${id1}-${id2}&season=${season - 1}`);
+    results = [...results, ...(prev.response || [])];
+  }
+  const sorted = results.sort((a,b) => new Date(b.fixture.date) - new Date(a.fixture.date));
+  return sorted.slice(0, 8);
+}
+
+function formatFixturesForClaude(fixtures, teamId) {
+  return fixtures.map(f => {
+    const isHome = f.teams.home.id === teamId;
+    const gf = isHome ? f.goals.home : f.goals.away;
+    const ga = isHome ? f.goals.away : f.goals.home;
+    const opp = isHome ? f.teams.away.name : f.teams.home.name;
+    const total = (f.goals.home||0)+(f.goals.away||0);
+    const date = f.fixture.date.slice(0,10);
+    return `${date} [${isHome?'H':'A'}] vs ${opp}: ${gf}-${ga} (Total: ${total})`;
+  });
+}
+
+function formatH2HForClaude(h2h) {
+  return h2h.map(f => {
+    const total = (f.goals.home||0)+(f.goals.away||0);
+    return `${f.fixture.date.slice(0,10)}: ${f.teams.home.name} ${f.goals.home}-${f.goals.away} ${f.teams.away.name} (Total: ${total})`;
+  });
+}
+
+async function claudeAnalyse(homeTeam, awayTeam, homeFixtures, awayFixtures, h2h, markets) {
+  const mNames = {u45:'Under 4.5 Goals',u35:'Under 3.5 Goals',u25:'Under 2.5 Goals',btts:'Both Teams to Score',  '1x2':'Match Result (1X2)',ov15:'Over 1.5 Goals'};
+  const mList = markets.map(m => mNames[m]||m).join(', ');
+
+  const prompt = `You are an elite football betting analyst. Analyse this match using REAL data provided.
+
+MATCH: ${homeTeam.team.name} vs ${awayTeam.team.name}
+MARKETS: ${mList}
+
+${homeTeam.team.name} LAST ${homeFixtures.length} MATCHES:
+${formatFixturesForClaude(homeFixtures, homeTeam.team.id).join('\n') || 'No recent data found'}
+
+${awayTeam.team.name} LAST ${awayFixtures.length} MATCHES:
+${formatFixturesForClaude(awayFixtures, awayTeam.team.id).join('\n') || 'No recent data found'}
+
+HEAD TO HEAD (last ${h2h.length} meetings):
+${h2h.length > 0 ? formatH2HForClaude(h2h).join('\n') : 'No H2H data'}
+
+Analyse deeply:
+- Calculate average goals per game, scored, conceded for each team
+- Count games over/under each threshold
+- Identify trends and patterns
+- Weight H2H data
+
+Return ONLY this JSON (no markdown, no backticks):
+{
+  "markets": {
+    ${markets.map(m => `"${m}": {"probability": <0-100>, "confidence": "<Low|Medium|High>", "recommendation": "<BET|SKIP|BORDERLINE>", "reasoning": "<1 sentence with specific numbers>"}`).join(',\n    ')}
+  },
+  "homeStats": {"avgGoalsPerGame": <1dp>, "avgScored": <1dp>, "avgConceded": <1dp>, "cleanSheets": <n>, "over25Count": "<X of Y>", "over35Count": "<X of Y>", "over45Count": "<X of Y>"},
+  "awayStats": {"avgGoalsPerGame": <1dp>, "avgScored": <1dp>, "avgConceded": <1dp>, "cleanSheets": <n>, "over25Count": "<X of Y>", "over35Count": "<X of Y>", "over45Count": "<X of Y>"},
+  "h2hStats": {"avgGoals": <1dp>, "under45Count": "<X of Y>", "under35Count": "<X of Y>", "bttsCount": "<X of Y>"},
+  "keyFactors": ["<factor with numbers>", "<factor with numbers>", "<factor with numbers>", "<factor>"],
+  "overallVerdict": "<BET|SKIP|BORDERLINE>",
+  "strongestMarket": "<which market + why in one sentence>",
+  "recentForm": {
+    "home": ["<date vs Opp: score>","<date vs Opp: score>","<date vs Opp: score>","<date vs Opp: score>","<date vs Opp: score>"],
+    "away": ["<date vs Opp: score>","<date vs Opp: score>","<date vs Opp: score>","<date vs Opp: score>","<date vs Opp: score>"]
+  }
+}`;
+
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({model:'claude-sonnet-4-20250514', max_tokens:1500, messages:[{role:'user',content:prompt}]})
+  });
+  const data = await res.json();
+  if (data.error) throw new Error('Claude: ' + data.error.message);
+  const text = data.content.map(b=>b.text||'').join('');
+  const clean = text.replace(/```json|```/g,'').trim();
+  const match = clean.match(/\{[\s\S]*\}/);
+  if (!match) throw new Error('Could not parse analysis. Try again.');
+  return JSON.parse(match[0]);
+}
+
+async function runPrediction() {
+  if (!selectedHome) { showPredictError("Please select a home team."); return; }
+  if (!selectedAway) { showPredictError("Please select an away team."); return; }
+  if (!selectedMarkets.length) { showPredictError("Please select at least one market."); return; }
+  hidePredictError();
+  document.getElementById('loadingSection').style.display = 'block';
+  document.getElementById('resultsSection').style.display = 'none';
+  document.getElementById('predictBtn').disabled = true;
+
+  try {
+    setStep("Fetching recent fixtures...");
+    const [homeFixtures, awayFixtures] = await Promise.all([
+      getFixtures(selectedHome.team.id),
+      getFixtures(selectedAway.team.id)
+    ]);
+
+    setStep("Fetching head to head data...");
+    const h2h = await getH2H(selectedHome.team.id, selectedAway.team.id);
+
+    setStep("Claude is analysing the data...");
+    const analysis = await claudeAnalyse(selectedHome, selectedAway, homeFixtures, awayFixtures, h2h, selectedMarkets);
+
+    matchCount++;
+    document.getElementById('matchCount').textContent = matchCount;
+    window._lastResult = {analysis, home: selectedHome.team.name, away: selectedAway.team.name};
+    renderResults(analysis);
+  } catch(e) {
+    showPredictError(e.message || "Something went wrong. Please try again.");
+  } finally {
+    document.getElementById('loadingSection').style.display = 'none';
+    document.getElementById('predictBtn').disabled = false;
+  }
+}
+
+function setStep(msg) { document.getElementById('loadingStep').textContent = msg; }
+function showPredictError(msg) { const b = document.getElementById('predictError'); b.style.display='block'; b.textContent='⚠ '+msg; }
+function hidePredictError() { document.getElementById('predictError').style.display='none'; }
+
+function renderResults(a) {
+  const vc = {BET:{bg:'linear-gradient(135deg,#00ff87,#00c96a)',c:'#000'},SKIP:{bg:'linear-gradient(135deg,#ff4757,#c0392b)',c:'#fff'},BORDERLINE:{bg:'linear-gradient(135deg,#ffd32a,#f0a500)',c:'#000'}};
+  const v = vc[a.overallVerdict] || vc.BORDERLINE;
+  const rc = {BET:'var(--green)',SKIP:'var(--red)',BORDERLINE:'var(--yellow)'};
+  const rb = {BET:'rgba(0,255,135,0.12)',SKIP:'rgba(255,71,87,0.12)',BORDERLINE:'rgba(255,211,42,0.12)'};
+  const mNames = {u45:'Under 4.5',u35:'Under 3.5',u25:'Under 2.5',btts:'BTTS','1x2':'1X2',ov15:'Over 1.5'};
+
+  const marketRows = Object.entries(a.markets||{}).map(([k,m])=>`
+    <div class="market-result">
+      <div>
+        <div class="market-name">${mNames[k]||k}</div>
+        <div style="font-size:11px;color:var(--text-dim);margin-top:2px">${m.reasoning}</div>
+      </div>
+      <div style="text-align:right;margin-left:12px;flex-shrink:0">
+        <div class="market-prob" style="color:${rc[m.recommendation]}">${m.probability}%</div>
+        <div class="market-rec" style="color:${rc[m.recommendation]};background:${rb[m.recommendation]}">${m.recommendation}</div>
+      </div>
+    </div>`).join('');
+
+  const h=a.homeStats||{}, aw=a.awayStats||{}, h2h=a.h2hStats||{};
+  const formRows = arr => (arr||[]).map(r=>`<div class="form-row"><span class="form-match">${r}</span></div>`).join('');
+
+  document.getElementById('resultsSection').innerHTML = `
+    <div class="fade-in">
+      <div class="verdict-card" style="background:${v.bg};color:${v.c}">
+        <div class="verdict-label">OVERALL VERDICT</div>
+        <div class="verdict-main">${a.overallVerdict||'BORDERLINE'}</div>
+        <div class="verdict-reason">${a.strongestMarket||''}</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Market Analysis</div>
+        ${marketRows}
+      </div>
+      <div class="card">
+        <div class="card-title">Team Statistics</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div>
+            <div style="font-size:10px;color:var(--green);letter-spacing:2px;margin-bottom:10px">${selectedHome.team.name.slice(0,14).toUpperCase()}</div>
+            <div class="stat-row"><span class="stat-key">Avg Goals/Game</span><span class="stat-val">${h.avgGoalsPerGame}</span></div>
+            <div class="stat-row"><span class="stat-key">Avg Scored</span><span class="stat-val">${h.avgScored}</span></div>
+            <div class="stat-row"><span class="stat-key">Avg Conceded</span><span class="stat-val">${h.avgConceded}</span></div>
+            <div class="stat-row"><span class="stat-key">Clean Sheets</span><span class="stat-val">${h.cleanSheets}</span></div>
+            <div class="stat-row"><span class="stat-key">Over 2.5</span><span class="stat-val">${h.over25Count}</span></div>
+            <div class="stat-row"><span class="stat-key">Over 3.5</span><span class="stat-val">${h.over35Count}</span></div>
+            <div class="stat-row"><span class="stat-key">Over 4.5</span><span class="stat-val">${h.over45Count}</span></div>
+          </div>
+          <div>
+            <div style="font-size:10px;color:var(--green);letter-spacing:2px;margin-bottom:10px">${selectedAway.team.name.slice(0,14).toUpperCase()}</div>
+            <div class="stat-row"><span class="stat-key">Avg Goals/Game</span><span class="stat-val">${aw.avgGoalsPerGame}</span></div>
+            <div class="stat-row"><span class="stat-key">Avg Scored</span><span class="stat-val">${aw.avgScored}</span></div>
+            <div class="stat-row"><span class="stat-key">Avg Conceded</span><span class="stat-val">${aw.avgConceded}</span></div>
+            <div class="stat-row"><span class="stat-key">Clean Sheets</span><span class="stat-val">${aw.cleanSheets}</span></div>
+            <div class="stat-row"><span class="stat-key">Over 2.5</span><span class="stat-val">${aw.over25Count}</span></div>
+            <div class="stat-row"><span class="stat-key">Over 3.5</span><span class="stat-val">${aw.over35Count}</span></div>
+            <div class="stat-row"><span class="stat-key">Over 4.5</span><span class="stat-val">${aw.over45Count}</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Head to Head</div>
+        <div class="stat-row"><span class="stat-key">Avg Goals H2H</span><span class="stat-val">${h2h.avgGoals}</span></div>
+        <div class="stat-row"><span class="stat-key">Under 4.5</span><span class="stat-val">${h2h.under45Count}</span></div>
+        <div class="stat-row"><span class="stat-key">Under 3.5</span><span class="stat-val">${h2h.under35Count}</span></div>
+        <div class="stat-row"><span class="stat-key">BTTS</span><span class="stat-val">${h2h.bttsCount}</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Key Factors</div>
+        ${(a.keyFactors||[]).map((f,i)=>`<div class="factor-item"><div class="factor-icon">${i+1}</div><div class="factor-text">${f}</div></div>`).join('')}
+      </div>
+      <div class="card">
+        <div class="card-title">Recent Form</div>
+        <div style="font-size:10px;color:var(--green);letter-spacing:2px;margin-bottom:8px">${selectedHome.team.name.toUpperCase()}</div>
+        ${formRows(a.recentForm?.home)}
+        <div style="font-size:10px;color:var(--green);letter-spacing:2px;margin:14px 0 8px">${selectedAway.team.name.toUpperCase()}</div>
+        ${formRows(a.recentForm?.away)}
+      </div>
+      <button class="btn btn-green" onclick="addToBetslip()">+ ADD TO BETSLIP</button>
+      <button class="btn btn-ghost" onclick="resetPredict()">← NEW PREDICTION</button>
+      <div class="disclaimer">For informational purposes only · Gamble responsibly · Past data does not guarantee future results</div>
+    </div>`;
+  document.getElementById('resultsSection').style.display = 'block';
+  document.getElementById('resultsSection').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function addToBetslip() {
+  if (!window._lastResult) return;
+  const {analysis, home, away} = window._lastResult;
+  const mNames = {u45:'Under 4.5',u35:'Under 3.5',u25:'Under 2.5',btts:'BTTS','1x2':'1X2',ov15:'Over 1.5'};
+  let best = null, bestP = 0;
+  for (const [k,m] of Object.entries(analysis.markets||{})) {
+    if (m.recommendation === 'BET' && m.probability > bestP) { best={k,...m}; bestP=m.probability; }
+  }
+  if (!best) {
+    for (const [k,m] of Object.entries(analysis.markets||{})) {
+      if (m.probability > bestP) { best={k,...m}; bestP=m.probability; }
+    }
+  }
+  if (!best) { alert("No market data available."); return; }
+  betslip.push({id:Date.now(), match:`${home} vs ${away}`, market:mNames[best.k]||best.k, probability:best.probability, recommendation:best.recommendation});
+  alert(`Added: ${home} vs ${away} — ${mNames[best.k]} (${best.probability}%)`);
+}
+
+function renderBetslip() {
+  const container = document.getElementById('slipItems');
+  const empty = document.getElementById('slipEmpty');
+  const summary = document.getElementById('accaSummary');
+  if (!betslip.length) { empty.style.display='block'; container.innerHTML=''; summary.style.display='none'; return; }
+  empty.style.display = 'none';
+  const rc = {BET:'var(--green)',SKIP:'var(--red)',BORDERLINE:'var(--yellow)'};
+  container.innerHTML = betslip.map(i=>`
+    <div class="slip-item">
+      <button class="slip-remove" onclick="removeFromSlip(${i.id})">×</button>
+      <div class="slip-match">${i.match}</div>
+      <div class="slip-market">${i.market}</div>
+      <div class="slip-prob" style="color:${rc[i.recommendation]}">${i.probability}%</div>
+    </div>`).join('');
+  const accaProb = betslip.reduce((acc,i)=>acc*(i.probability/100),1)*100;
+  const accaRec = accaProb>=60?'Strong accumulator — worth considering':accaProb>=40?'Moderate risk — bet carefully':'High risk — consider singles instead';
+  summary.innerHTML = `
+    <div class="acca-summary">
+      <div class="acca-label">ACCUMULATOR PROBABILITY</div>
+      <div class="acca-prob" style="color:${accaProb>=60?'var(--green)':accaProb>=40?'var(--yellow)':'var(--red)'}">${accaProb.toFixed(1)}%</div>
+      <div class="acca-rec">${accaRec}</div>
+    </div>
+    <button class="btn btn-ghost" onclick="clearSlip()">CLEAR BETSLIP</button>`;
+  summary.style.display = 'block';
+}
+
+function removeFromSlip(id) { betslip=betslip.filter(i=>i.id!==id); renderBetslip(); }
+function clearSlip() { betslip=[]; renderBetslip(); }
+function resetPredict() {
+  selectedHome=null; selectedAway=null;
+  clearTeam('home'); clearTeam('away');
+  document.getElementById('resultsSection').style.display='none';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
